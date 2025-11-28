@@ -1,0 +1,25 @@
+{
+  "name": "grasp-language",
+  "displayName": "Grasp Language",
+  "description": "",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.106.1"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "contributes": {
+    "languages": [{
+      "id": "grasp",
+      "aliases": ["Grasp", "grasp"],
+      "extensions": [".grasp"],
+      "configuration": "./language-configuration.json"
+    }],
+    "grammars": [{
+      "language": "grasp",
+      "scopeName": "source.grasp",
+      "path": "./syntaxes/grasp.tmLanguage.json"
+    }]
+  }
+}
