@@ -2,19 +2,24 @@
 	"$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
 	"name": "Grasp",
 	"patterns": [
-		{
-			"include": "#keywords"
-		},
-		{
-			"include": "#strings"
-		}
+		{ "include": "#keywords" },
+		{ "include": "#strings" },
+		{ "include": "#constants" },
+		{ "include": "#comments" },
+		{ "include": "#params" }
 	],
 	"repository": {
 		"keywords": {
-			"patterns": [{
-				"name": "keyword.control.grasp",
-				"match": "\\b(if|while|for|return)\\b"
-			}]
+			"patterns": [
+				{
+					"name": "keyword.control.grasp",
+					"match": "\\b(not|is)\\b"
+				},
+				{
+					"name": "keyword.operator.grasp",
+					"match": "\\b(\\:\\=|\\<\\-)\\b"
+				}
+			]
 		},
 		"strings": {
 			"name": "string.quoted.double.grasp",
@@ -24,6 +29,31 @@
 				{
 					"name": "constant.character.escape.grasp",
 					"match": "\\\\."
+				}
+			]
+		},
+		"constants": {
+			"patterns": [
+				{
+					"name": "constant.numeric.grasp",
+					"match": "\\b[0-9]+\\b"
+				},
+				{
+					"name": "constant.language.grasp",
+					"match": "\\b(true|false|NULL)\\b"
+				}
+			]
+		},
+		"comments": {
+			"name": "comment.line.number-sign.grasp",
+			"begin": "#",
+			"end": "$"
+		},
+		"params": {
+			"patterns": [
+				{
+					"name": "variable.parameter.grasp",
+					"match": "\\b[\\w_]+\\b"
 				}
 			]
 		}
