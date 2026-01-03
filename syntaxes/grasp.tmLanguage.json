@@ -65,7 +65,7 @@
 					"match": "\\s*([a-z_][A-Za-z0-9_]*\\:)\\s*",
 					"captures": {
 						"1": {
-							"name": "variable.parameter.grasp"
+							"name": "constant.other.key.grasp"
 						}
 					}
 				}
@@ -127,7 +127,7 @@
 					"match": "\\b\\??([a-z_][A-Za-z0-9_]*)\\b",
 					"captures": {
 						"1": {
-							"name": "variable.other.grasp"
+							"name": "other.grasp"
 						}
 					}
 				},
@@ -135,7 +135,7 @@
 					"match": "\\b\\??([a-z_][A-Za-z0-9_]*)(\\:\\:)([A-Z]+)\\b",
 					"captures": {
 						"1": {
-							"name": "variable.other.grasp"
+							"name": "other.grasp"
 						},
 						"2": {
 							"name": "keyword.operator.type-cast.grasp"
@@ -157,13 +157,13 @@
 							"name": "entity.name.function.aggregate.grasp"
 						},
 						"2": {
-							"name": "punctuation.definition.arguments.begin.grasp"
+							"name": "keyword.other.grasp"
 						}
 					},
 					"end": "(\\>)",
 					"endCaptures": {
 						"1": {
-							"name": "punctuation.definition.arguments.end.grasp"
+							"name": "keyword.other.grasp"
 						}
 					},
 					"patterns": [
