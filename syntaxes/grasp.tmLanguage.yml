@@ -124,13 +124,13 @@ repository:
         name: punctuation.section.parens.end.grasp
 
   rule-arrow-multi:
-    match: "\\s*(<-)\\s*$"
+    match: "\\s*(<-)(?=\\s*$)"
     captures:
       '1': { name: keyword.operator.arrow.grasp }
 
   rule-arrow-single:
     name: meta.body.inline.grasp
-    begin: "\\s*(<-)\\s*"
+    begin: "\\s*(<-)"
     beginCaptures:
       '1': { name: keyword.operator.arrow.grasp }
     end: "$"
@@ -267,12 +267,13 @@ repository:
 
   match-aggregate:
     name: meta.match.aggregate.grasp
-    begin: "\\b([a-z_][A-Za-z0-9_]*)\\s*(:=)\\s*((?:[A-Za-z_][A-Za-z0-9_]*:)?(?:sum|count|min|max|avg))\\s*(<)"
+    begin: "\\b([a-z_][A-Za-z0-9_]*)\\s*(:=)\\s*(?:([A-Za-z_][A-Za-z0-9_]*)\\s*:)?(sum|count|min|max|avg)\\s*(<)"
     beginCaptures:
       '1': { name: variable.other.grasp }
       '2': { name: keyword.operator.grasp }
-      '3': { name: entity.name.function.aggregate.grasp }
-      '4': { name: punctuation.definition.arguments.begin.grasp }
+      '3': { name: entity.name.namespace.grasp }
+      '4': { name: entity.name.function.aggregate.grasp }
+      '5': { name: punctuation.definition.arguments.begin.grasp }
     end: "(>)"
     endCaptures:
       '1': { name: punctuation.definition.arguments.end.grasp }
@@ -365,10 +366,11 @@ repository:
 
   aggregate-expr:
     name: meta.aggregate.grasp
-    begin: "\\b((?:[A-Za-z_][A-Za-z0-9_]*:)?(?:sum|count|min|max|avg))\\s*(<)"
+    begin: "\\b(?:([A-Za-z_][A-Za-z0-9_]*)\\s*:)?(sum|count|min|max|avg)\\s*(<)"
     beginCaptures:
-      '1': { name: entity.name.function.aggregate.grasp }
-      '2': { name: punctuation.definition.arguments.begin.grasp }
+      '1': { name: entity.name.namespace.grasp }
+      '2': { name: entity.name.function.aggregate.grasp }
+      '3': { name: punctuation.definition.arguments.begin.grasp }
     end: "(>)"
     endCaptures:
       '1': { name: punctuation.definition.arguments.end.grasp }
