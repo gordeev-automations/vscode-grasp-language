@@ -61,7 +61,7 @@ repository:
       - match: '(\))'
         name: punctuation.section.parens.end.grasp
       - match: '(->)'
-        name: keyword.operator.arrow.grasp
+        name: keyword.operator.grasp
       - match: ','
         name: punctuation.separator.grasp
       - include: '#types'
