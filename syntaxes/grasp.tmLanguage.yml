@@ -1,0 +1,583 @@
+$schema: "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json"
+name: Grasp
+scopeName: source.grasp
+fileTypes: [.grasp]
+
+patterns:
+  - include: '#comments'
+  - include: '#specs'
+  - include: '#rule'
+  - include: '#operators'
+  - include: '#keywords'
+  - include: '#types'
+  - include: '#literals'
+  - include: '#variable'
+
+repository:
+
+  # ==========================================================================
+  # Comments
+  # ==========================================================================
+
+  comments:
+    patterns:
+      - match: '#.*$'
+        name: comment.line.number-sign.grasp
+
+  # ==========================================================================
+  # Specs
+  # ==========================================================================
+
+  specs:
+    patterns:
+      - include: '#fn-agg-spec'
+      - include: '#rule-spec'
+
+  fn-agg-spec:
+    patterns:
+      - name: meta.spec.fn-agg.grasp
+        begin: "^[\\t ]*([A-Za-z_][A-Za-z0-9_]*(?::[A-Za-z0-9_]+)*)\\s*(::)\\s*(function|aggregate)\\s*$"
+        beginCaptures:
+          '1': { name: entity.name.function.grasp }
+          '2': { name: keyword.operator.grasp }
+          '3': { name: storage.type.grasp }
+        end: "^(?=[^\\s#])"
+        patterns:
+          - include: '#overload-line'
+          - include: '#comments'
+
+  overload-line:
+    name: meta.overload.grasp
+    begin: "^[\\t ]+"
+    end: "$"
+    patterns:
+      - include: '#overload-content'
+      - include: '#comments'
+
+  overload-content:
+    patterns:
+      - match: '(\()'
+        name: punctuation.section.parens.begin.grasp
+      - match: '(\))'
+        name: punctuation.section.parens.end.grasp
+      - match: '(->)'
+        name: keyword.operator.arrow.grasp
+      - match: ','
+        name: punctuation.separator.grasp
+      - include: '#types'
+      - match: "\\b([a-z_][A-Za-z0-9_]*)\\s*(:)"
+        captures:
+          '1': { name: variable.parameter.grasp }
+          '2': { name: punctuation.separator.key-value.grasp }
+
+  rule-spec:
+    name: meta.spec.rule.grasp
+    begin: "^[\\t ]*([A-Za-z_][A-Za-z0-9_]*(?::[A-Za-z0-9_]+)*)\\s*(::)\\s*(relation)\\s*(\\()"
+    beginCaptures:
+      '1': { name: entity.name.function.grasp }
+      '2': { name: keyword.operator.grasp }
+      '3': { name: storage.type.grasp }
+      '4': { name: punctuation.section.parens.begin.grasp }
+    end: "(\\))"
+    endCaptures:
+      '1': { name: punctuation.section.parens.end.grasp }
+    patterns:
+      - include: '#kv-types'
+      - include: '#comments'
+
+  kv-types:
+    patterns:
+      - match: "\\b([a-z_][A-Za-z0-9_]*)\\s*(:)"
+        captures:
+          '1': { name: variable.other.grasp }
+          '2': { name: punctuation.separator.key-value.grasp }
+      - include: '#types'
+      - match: ','
+        name: punctuation.separator.grasp
+
+  # ==========================================================================
+  # Rule
+  # ==========================================================================
+
+  rule:
+    patterns:
+      - name: meta.rule.grasp
+        begin: "^[\\t ]*([A-Za-z_][A-Za-z0-9_]*(?::[A-Za-z0-9_]+)*)(\\()"
+        beginCaptures:
+          '1': { name: entity.name.function.rule.grasp }
+          '2': { name: punctuation.section.parens.begin.grasp }
+        end: "^(?=[^\\s#])"
+        patterns:
+          - include: '#head-content'
+          - include: '#body-line'
+          - include: '#comments'
+
+  head-content:
+    patterns:
+      - include: '#kv-args'
+      - include: '#rule-arrow-multi'
+      - include: '#rule-arrow-single'
+      - match: '\)'
+        name: punctuation.section.parens.end.grasp
+      - include: '#comments'
+
+  rule-arrow-multi:
+    match: "\\s*(<-)\\s*$"
+    captures:
+      '1': { name: keyword.operator.arrow.grasp }
+
+  rule-arrow-single:
+    name: meta.body.inline.grasp
+    begin: "\\s*(<-)\\s*"
+    beginCaptures:
+      '1': { name: keyword.operator.arrow.grasp }
+    end: "$"
+    patterns:
+      - include: '#body-statement'
+      - include: '#comments'
+
+  body-line:
+    name: meta.body.line.grasp
+    begin: "^[\\t ]+"
+    end: "$"
+    patterns:
+      - include: '#body-statement'
+      - include: '#comments'
+
+  # ==========================================================================
+  # Body Statements
+  # ==========================================================================
+
+  body-statement:
+    patterns:
+      - include: '#input-stmt'
+      - include: '#negated-atom'
+      - include: '#positive-atom'
+      - include: '#unnest-match'
+      - include: '#match-stmt'
+      - include: '#type-assertion'
+      - include: '#expr'
+
+  input-stmt:
+    name: meta.statement.input.grasp
+    begin: "\\b(input)\\b"
+    beginCaptures:
+      '1': { name: keyword.control.grasp }
+    end: "$"
+    patterns:
+      - match: "\\b(limit|order_by|offset|asc|desc|all)\\b"
+        name: keyword.control.grasp
+      - match: ':'
+        name: punctuation.separator.key-value.grasp
+      - match: '(\[)'
+        name: punctuation.section.brackets.begin.grasp
+      - match: '(\])'
+        name: punctuation.section.brackets.end.grasp
+      - match: ','
+        name: punctuation.separator.grasp
+      - include: '#expr'
+
+  negated-atom:
+    name: meta.atom.negated.grasp
+    begin: "\\b(not)\\s+([A-Za-z_][A-Za-z0-9_]*(?::[A-Za-z0-9_]+)*)(\\()"
+    beginCaptures:
+      '1': { name: keyword.control.grasp }
+      '2': { name: entity.name.function.grasp }
+      '3': { name: punctuation.section.parens.begin.grasp }
+    end: "(\\))"
+    endCaptures:
+      '1': { name: punctuation.section.parens.end.grasp }
+    patterns:
+      - include: '#kv-args'
+      - include: '#expr'
+      - include: '#comments'
+
+  positive-atom:
+    name: meta.atom.grasp
+    begin: "\\b([A-Za-z_][A-Za-z0-9_]*(?::[A-Za-z0-9_]+)*)(\\()"
+    beginCaptures:
+      '1': { name: entity.name.function.grasp }
+      '2': { name: punctuation.section.parens.begin.grasp }
+    end: "(\\))"
+    endCaptures:
+      '1': { name: punctuation.section.parens.end.grasp }
+    patterns:
+      - include: '#kv-args'
+      - include: '#expr'
+      - include: '#comments'
+
+  unnest-match:
+    name: meta.unnest.grasp
+    begin: "(\\(\\s*)([a-z_][A-Za-z0-9_]*)"
+    beginCaptures:
+      '1': { name: punctuation.section.parens.begin.grasp }
+      '2': { name: variable.other.grasp }
+    end: "(\\))\\s*(:=)\\s*(\\*\\*?)"
+    endCaptures:
+      '1': { name: punctuation.section.parens.end.grasp }
+      '2': { name: keyword.operator.grasp }
+      '3': { name: keyword.operator.grasp }
+    patterns:
+      - match: ','
+        name: punctuation.separator.grasp
+      - match: "\\b([a-z_][A-Za-z0-9_]*)\\b"
+        name: variable.other.grasp
+
+  match-stmt:
+    patterns:
+      - include: '#match-destructure-dict'
+      - include: '#match-destructure-array'
+      - include: '#match-aggregate'
+      - include: '#match-simple'
+
+  match-destructure-dict:
+    name: meta.match.destructure.grasp
+    begin: "(\\{)"
+    beginCaptures:
+      '1': { name: punctuation.section.braces.begin.grasp }
+    end: "(\\})\\s*(:=)"
+    endCaptures:
+      '1': { name: punctuation.section.braces.end.grasp }
+      '2': { name: keyword.operator.grasp }
+    patterns:
+      - include: '#kv-args'
+      - match: "\\*\\*\\s*([a-z_][A-Za-z0-9_]*)"
+        captures:
+          '1': { name: variable.other.grasp }
+      - include: '#comments'
+
+  match-destructure-array:
+    name: meta.match.destructure.grasp
+    begin: "(\\[)"
+    beginCaptures:
+      '1': { name: punctuation.section.brackets.begin.grasp }
+    end: "(\\])\\s*(:=)"
+    endCaptures:
+      '1': { name: punctuation.section.brackets.end.grasp }
+      '2': { name: keyword.operator.grasp }
+    patterns:
+      - include: '#expr'
+      - match: "\\*\\s*([a-z_][A-Za-z0-9_]*)"
+        captures:
+          '1': { name: variable.other.grasp }
+      - match: ','
+        name: punctuation.separator.grasp
+
+  match-aggregate:
+    name: meta.match.aggregate.grasp
+    begin: "\\b([a-z_][A-Za-z0-9_]*)\\s*(:=)\\s*((?:[A-Za-z_][A-Za-z0-9_]*:)?(?:sum|count|min|max|avg))\\s*(<)"
+    beginCaptures:
+      '1': { name: variable.other.grasp }
+      '2': { name: keyword.operator.grasp }
+      '3': { name: entity.name.function.aggregate.grasp }
+      '4': { name: punctuation.definition.arguments.begin.grasp }
+    end: "(>)"
+    endCaptures:
+      '1': { name: punctuation.definition.arguments.end.grasp }
+    patterns:
+      - include: '#expr-comparison'
+      - include: '#comments'
+
+  match-simple:
+    match: "\\b([a-z_][A-Za-z0-9_]*)\\s*(:=)"
+    captures:
+      '1': { name: variable.other.grasp }
+      '2': { name: keyword.operator.grasp }
+
+  type-assertion:
+    name: meta.type-assertion.grasp
+    begin: "\\b([a-z_][A-Za-z0-9_]*)\\s*(::)"
+    beginCaptures:
+      '1': { name: variable.other.grasp }
+      '2': { name: keyword.operator.grasp }
+    end: "$"
+    patterns:
+      - include: '#types'
+      - include: '#comments'
+
+  # ==========================================================================
+  # Key-Value Arguments
+  # ==========================================================================
+
+  kv-args:
+    patterns:
+      - include: '#kv-arg'
+      - match: ','
+        name: punctuation.separator.grasp
+
+  kv-arg:
+    match: "\\b([a-z_][A-Za-z0-9_]*)\\s*(:)"
+    captures:
+      '1': { name: variable.parameter.grasp }
+      '2': { name: punctuation.separator.key-value.grasp }
+
+  # ==========================================================================
+  # Expressions
+  # ==========================================================================
+
+  expr:
+    patterns:
+      - include: '#string'
+      - include: '#number'
+      - include: '#bit-literal'
+      - include: '#fncall'
+      - include: '#aggregate-expr'
+      - include: '#dict-literal'
+      - include: '#bracket-expr'
+      - include: '#paren-expr'
+      - include: '#boolean-null'
+      - include: '#operators'
+      - include: '#variable'
+
+  string:
+    name: string.quoted.double.grasp
+    begin: '"'
+    end: '"'
+    patterns:
+      - name: constant.character.escape.grasp
+        match: "\\\\."
+
+  number:
+    match: "\\b\\d+(\\.\\d+)?([eE][+-]?\\d+)?\\b"
+    name: constant.numeric.grasp
+
+  bit-literal:
+    match: "\\b0b[01]+\\b"
+    name: constant.numeric.bit.grasp
+
+  fncall:
+    name: meta.function-call.grasp
+    begin: "\\b([A-Za-z_][A-Za-z0-9_]*(?::[A-Za-z0-9_]+)*)(\\()"
+    beginCaptures:
+      '1': { name: entity.name.function.grasp }
+      '2': { name: punctuation.section.parens.begin.grasp }
+    end: "(\\))"
+    endCaptures:
+      '1': { name: punctuation.section.parens.end.grasp }
+    patterns:
+      - include: '#kv-arg'
+      - include: '#expr'
+      - match: ','
+        name: punctuation.separator.grasp
+      - include: '#comments'
+
+  aggregate-expr:
+    name: meta.aggregate.grasp
+    begin: "\\b((?:[A-Za-z_][A-Za-z0-9_]*:)?(?:sum|count|min|max|avg))\\s*(<)"
+    beginCaptures:
+      '1': { name: entity.name.function.aggregate.grasp }
+      '2': { name: punctuation.definition.arguments.begin.grasp }
+    end: "(>)"
+    endCaptures:
+      '1': { name: punctuation.definition.arguments.end.grasp }
+    patterns:
+      - include: '#expr-comparison'
+      - match: ','
+        name: punctuation.separator.grasp
+      - include: '#comments'
+
+  expr-comparison:
+    patterns:
+      - include: '#operators'
+      - include: '#string'
+      - include: '#number'
+      - include: '#bit-literal'
+      - include: '#fncall'
+      - include: '#paren-expr'
+      - include: '#boolean-null'
+      - include: '#variable'
+
+  dict-literal:
+    name: meta.dict.literal.grasp
+    begin: "(\\{)"
+    beginCaptures:
+      '1': { name: punctuation.section.braces.begin.grasp }
+    end: "(\\})"
+    endCaptures:
+      '1': { name: punctuation.section.braces.end.grasp }
+    patterns:
+      - include: '#kv-args'
+      - include: '#expr'
+      - match: ','
+        name: punctuation.separator.grasp
+      - match: "\\*\\*\\s*([a-z_][A-Za-z0-9_]*)"
+        captures:
+          '1': { name: variable.other.grasp }
+      - include: '#comments'
+
+  bracket-expr:
+    name: meta.brackets.grasp
+    begin: "(\\[)"
+    beginCaptures:
+      '1': { name: punctuation.section.brackets.begin.grasp }
+    end: "(\\])"
+    endCaptures:
+      '1': { name: punctuation.section.brackets.end.grasp }
+    patterns:
+      - include: '#expr'
+      - match: ':'
+        name: punctuation.separator.slice.grasp
+      - match: ','
+        name: punctuation.separator.grasp
+
+  paren-expr:
+    name: meta.parens.grasp
+    begin: "(\\()"
+    beginCaptures:
+      '1': { name: punctuation.section.parens.begin.grasp }
+    end: "(\\))"
+    endCaptures:
+      '1': { name: punctuation.section.parens.end.grasp }
+    patterns:
+      - include: '#expr'
+
+  boolean-null:
+    match: "\\b(true|false|NULL)\\b"
+    name: constant.language.grasp
+
+  # ==========================================================================
+  # Operators
+  # ==========================================================================
+
+  operators:
+    patterns:
+      - match: '(\*\*|<<<|>>>|<<|>>|\+\+|!=|<=|>=|:=|::|<-|->)'
+        name: keyword.operator.grasp
+      - match: '([+\-*/%&|^~=<>])'
+        name: keyword.operator.grasp
+
+  # ==========================================================================
+  # Keywords
+  # ==========================================================================
+
+  keywords:
+    match: "\\b(not|and|or|input|limit|order_by|offset|asc|desc|all)\\b"
+    name: keyword.control.grasp
+
+  # ==========================================================================
+  # Identifiers / Variables
+  # ==========================================================================
+
+  variable:
+    match: "\\b([a-z_][A-Za-z0-9_]*)\\b"
+    name: variable.other.grasp
+
+  # ==========================================================================
+  # Types
+  # ==========================================================================
+
+  types:
+    patterns:
+      - include: '#compound-type'
+      - include: '#scalar-type'
+
+  scalar-type:
+    match: "\\b(boolean|i8|i16|i32|i64|u8|u16|u32|u64|integer|f32|f64|numeric|string|bytes|bits|date|time|timestamp|timestamp_with_timezone|interval|json|any)\\b"
+    name: storage.type.grasp
+
+  compound-type:
+    patterns:
+      - include: '#type-nullable'
+      - include: '#type-thunk'
+      - include: '#type-array'
+      - include: '#type-map'
+      - include: '#type-struct'
+      - include: '#type-parametric'
+
+  type-nullable:
+    name: meta.type.grasp
+    begin: "\\b(nullable)\\s*(\\()"
+    beginCaptures:
+      '1': { name: storage.type.grasp }
+      '2': { name: punctuation.section.parens.begin.grasp }
+    end: "(\\))"
+    endCaptures:
+      '1': { name: punctuation.section.parens.end.grasp }
+    patterns:
+      - include: '#types'
+
+  type-thunk:
+    name: meta.type.grasp
+    begin: "\\b(thunk)\\s*(\\()"
+    beginCaptures:
+      '1': { name: storage.type.grasp }
+      '2': { name: punctuation.section.parens.begin.grasp }
+    end: "(\\))"
+    endCaptures:
+      '1': { name: punctuation.section.parens.end.grasp }
+    patterns:
+      - include: '#types'
+
+  type-array:
+    name: meta.type.grasp
+    begin: "\\b(array)\\s*(\\()"
+    beginCaptures:
+      '1': { name: storage.type.grasp }
+      '2': { name: punctuation.section.parens.begin.grasp }
+    end: "(\\))"
+    endCaptures:
+      '1': { name: punctuation.section.parens.end.grasp }
+    patterns:
+      - include: '#types'
+      - match: ','
+        name: punctuation.separator.grasp
+      - include: '#number'
+
+  type-map:
+    name: meta.type.grasp
+    begin: "\\b(map)\\s*(\\()"
+    beginCaptures:
+      '1': { name: storage.type.grasp }
+      '2': { name: punctuation.section.parens.begin.grasp }
+    end: "(\\))"
+    endCaptures:
+      '1': { name: punctuation.section.parens.end.grasp }
+    patterns:
+      - include: '#types'
+      - match: ','
+        name: punctuation.separator.grasp
+
+  type-struct:
+    name: meta.type.grasp
+    begin: "\\b(struct)\\s*(\\()"
+    beginCaptures:
+      '1': { name: storage.type.grasp }
+      '2': { name: punctuation.section.parens.begin.grasp }
+    end: "(\\))"
+    endCaptures:
+      '1': { name: punctuation.section.parens.end.grasp }
+    patterns:
+      - name: meta.struct-field.grasp
+        match: '("[^"]*")\\s*(:)'
+        captures:
+          '1': { name: string.quoted.double.grasp }
+          '2': { name: punctuation.separator.key-value.grasp }
+      - include: '#types'
+      - match: ','
+        name: punctuation.separator.grasp
+
+  type-parametric:
+    name: meta.type.grasp
+    begin: "\\b(numeric|string|bytes|bits)\\s*(\\()"
+    beginCaptures:
+      '1': { name: storage.type.grasp }
+      '2': { name: punctuation.section.parens.begin.grasp }
+    end: "(\\))"
+    endCaptures:
+      '1': { name: punctuation.section.parens.end.grasp }
+    patterns:
+      - include: '#number'
+      - include: '#string'
+      - match: ','
+        name: punctuation.separator.grasp
+
+  # ==========================================================================
+  # Literals (for top-level fallback)
+  # ==========================================================================
+
+  literals:
+    patterns:
+      - include: '#string'
+      - include: '#number'
+      - include: '#bit-literal'
+      - include: '#boolean-null'

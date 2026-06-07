@@ -1,25 +1,41 @@
 {
   "name": "grasp-language",
   "displayName": "Grasp Language",
-  "description": "",
-  "version": "0.0.1",
+  "description": "Syntax highlighting for the Grasp language",
+  "version": "0.1.0",
   "engines": {
     "vscode": "^1.106.1"
   },
   "categories": [
     "Programming Languages"
   ],
+  "scripts": {
+    "build-grammar": "node build-grammar.js",
+    "vscode:prepublish": "npm run build-grammar"
+  },
+  "devDependencies": {
+    "js-yaml": "^4.2.0"
+  },
   "contributes": {
-    "languages": [{
-      "id": "grasp",
-      "aliases": ["Grasp", "grasp"],
-      "extensions": [".grasp"],
-      "configuration": "./language-configuration.json"
-    }],
-    "grammars": [{
-      "language": "grasp",
-      "scopeName": "source.grasp",
-      "path": "./syntaxes/grasp.tmLanguage.json"
-    }]
+    "languages": [
+      {
+        "id": "grasp",
+        "aliases": [
+          "Grasp",
+          "grasp"
+        ],
+        "extensions": [
+          ".grasp"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "grasp",
+        "scopeName": "source.grasp",
+        "path": "./syntaxes/grasp.tmLanguage.json"
+      }
+    ]
   }
 }
