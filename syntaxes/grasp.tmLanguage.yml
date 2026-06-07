@@ -60,8 +60,9 @@ repository:
         name: punctuation.section.parens.begin.grasp
       - match: '(\))'
         name: punctuation.section.parens.end.grasp
-      - match: '(->)'
-        name: keyword.operator.arrow.grasp
+      - match: '\s*(->)'
+        captures:
+          '1': { name: keyword.operator.arrow.grasp }
       - match: ','
         name: punctuation.separator.grasp
       - include: '#types'
@@ -117,9 +118,10 @@ repository:
       - include: '#kv-args'
       - include: '#rule-arrow-multi'
       - include: '#rule-arrow-single'
+      - include: '#comments'
+      - include: '#expr'
       - match: '\)'
         name: punctuation.section.parens.end.grasp
-      - include: '#comments'
 
   rule-arrow-multi:
     match: "\\s*(<-)\\s*$"
