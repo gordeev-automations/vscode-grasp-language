@@ -11,7 +11,6 @@ patterns:
   - include: '#keywords'
   - include: '#types'
   - include: '#literals'
-  - include: '#variable'
 
 repository:
 
@@ -67,7 +66,7 @@ repository:
       - include: '#types'
       - match: "\\b([a-z_][A-Za-z0-9_]*)\\s*(:)"
         captures:
-          '1': { name: variable.parameter.grasp }
+          '1': { name: entity.other.attribute-name.grasp }
           '2': { name: punctuation.separator.key-value.grasp }
 
   rule-spec:
@@ -89,7 +88,7 @@ repository:
     patterns:
       - match: "\\b([a-z_][A-Za-z0-9_]*)\\s*(:)"
         captures:
-          '1': { name: variable.other.grasp }
+          '1': { name: entity.other.attribute-name.grasp }
           '2': { name: punctuation.separator.key-value.grasp }
       - include: '#types'
       - match: ','
@@ -212,7 +211,6 @@ repository:
     begin: "(\\(\\s*)([a-z_][A-Za-z0-9_]*)"
     beginCaptures:
       '1': { name: punctuation.section.parens.begin.grasp }
-      '2': { name: variable.other.grasp }
     end: "(\\))\\s*(:=)\\s*(\\*\\*?)"
     endCaptures:
       '1': { name: punctuation.section.parens.end.grasp }
@@ -221,8 +219,6 @@ repository:
     patterns:
       - match: ','
         name: punctuation.separator.grasp
-      - match: "\\b([a-z_][A-Za-z0-9_]*)\\b"
-        name: variable.other.grasp
 
   match-stmt:
     patterns:
@@ -243,8 +239,6 @@ repository:
     patterns:
       - include: '#kv-args'
       - match: "\\*\\*\\s*([a-z_][A-Za-z0-9_]*)"
-        captures:
-          '1': { name: variable.other.grasp }
       - include: '#comments'
 
   match-destructure-array:
@@ -259,8 +253,6 @@ repository:
     patterns:
       - include: '#expr'
       - match: "\\*\\s*([a-z_][A-Za-z0-9_]*)"
-        captures:
-          '1': { name: variable.other.grasp }
       - match: ','
         name: punctuation.separator.grasp
 
@@ -268,7 +260,6 @@ repository:
     name: meta.match.aggregate.grasp
     begin: "\\b([a-z_][A-Za-z0-9_]*)\\s*(:=)\\s*(?:([A-Za-z_][A-Za-z0-9_]*)\\s*:)?(sum|count|min|max|avg)\\s*(<)"
     beginCaptures:
-      '1': { name: variable.other.grasp }
       '2': { name: keyword.operator.grasp }
       '3': { name: entity.name.namespace.grasp }
       '4': { name: entity.name.function.aggregate.grasp }
@@ -283,14 +274,12 @@ repository:
   match-simple:
     match: "\\b([a-z_][A-Za-z0-9_]*)\\s*(:=)"
     captures:
-      '1': { name: variable.other.grasp }
       '2': { name: keyword.operator.grasp }
 
   type-assertion:
     name: meta.type-assertion.grasp
     begin: "\\b([a-z_][A-Za-z0-9_]*)\\s*(::)"
     beginCaptures:
-      '1': { name: variable.other.grasp }
       '2': { name: keyword.operator.grasp }
     end: "$"
     patterns:
@@ -310,7 +299,7 @@ repository:
   kv-arg:
     match: "\\b([a-z_][A-Za-z0-9_]*)\\s*(:)"
     captures:
-      '1': { name: variable.parameter.grasp }
+      '1': { name: entity.other.attribute-name.grasp }
       '2': { name: punctuation.separator.key-value.grasp }
 
   # ==========================================================================
@@ -329,7 +318,6 @@ repository:
       - include: '#paren-expr'
       - include: '#boolean-null'
       - include: '#operators'
-      - include: '#variable'
 
   string:
     name: string.quoted.double.grasp
@@ -388,7 +376,6 @@ repository:
       - include: '#fncall'
       - include: '#paren-expr'
       - include: '#boolean-null'
-      - include: '#variable'
 
   dict-literal:
     name: meta.dict.literal.grasp
@@ -404,8 +391,6 @@ repository:
       - match: ','
         name: punctuation.separator.grasp
       - match: "\\*\\*\\s*([a-z_][A-Za-z0-9_]*)"
-        captures:
-          '1': { name: variable.other.grasp }
       - include: '#comments'
 
   bracket-expr:
@@ -456,14 +441,6 @@ repository:
   keywords:
     match: "\\b(not|and|or|input|limit|order_by|offset|asc|desc|all)\\b"
     name: keyword.control.grasp
-
-  # ==========================================================================
-  # Identifiers / Variables
-  # ==========================================================================
-
-  variable:
-    match: "\\b([a-z_][A-Za-z0-9_]*)\\b"
-    name: variable.other.grasp
 
   # ==========================================================================
   # Types

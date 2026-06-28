@@ -26,9 +26,6 @@
 		},
 		{
 			"include": "#literals"
-		},
-		{
-			"include": "#variable"
 		}
 	],
 	"repository": {
@@ -116,7 +113,7 @@
 					"match": "\\b([a-z_][A-Za-z0-9_]*)\\s*(:)",
 					"captures": {
 						"1": {
-							"name": "variable.parameter.grasp"
+							"name": "entity.other.attribute-name.grasp"
 						},
 						"2": {
 							"name": "punctuation.separator.key-value.grasp"
@@ -163,7 +160,7 @@
 					"match": "\\b([a-z_][A-Za-z0-9_]*)\\s*(:)",
 					"captures": {
 						"1": {
-							"name": "variable.other.grasp"
+							"name": "entity.other.attribute-name.grasp"
 						},
 						"2": {
 							"name": "punctuation.separator.key-value.grasp"
@@ -396,9 +393,6 @@
 			"beginCaptures": {
 				"1": {
 					"name": "punctuation.section.parens.begin.grasp"
-				},
-				"2": {
-					"name": "variable.other.grasp"
 				}
 			},
 			"end": "(\\))\\s*(:=)\\s*(\\*\\*?)",
@@ -417,10 +411,6 @@
 				{
 					"match": ",",
 					"name": "punctuation.separator.grasp"
-				},
-				{
-					"match": "\\b([a-z_][A-Za-z0-9_]*)\\b",
-					"name": "variable.other.grasp"
 				}
 			]
 		},
@@ -462,12 +452,7 @@
 					"include": "#kv-args"
 				},
 				{
-					"match": "\\*\\*\\s*([a-z_][A-Za-z0-9_]*)",
-					"captures": {
-						"1": {
-							"name": "variable.other.grasp"
-						}
-					}
+					"match": "\\*\\*\\s*([a-z_][A-Za-z0-9_]*)"
 				},
 				{
 					"include": "#comments"
@@ -496,12 +481,7 @@
 					"include": "#expr"
 				},
 				{
-					"match": "\\*\\s*([a-z_][A-Za-z0-9_]*)",
-					"captures": {
-						"1": {
-							"name": "variable.other.grasp"
-						}
-					}
+					"match": "\\*\\s*([a-z_][A-Za-z0-9_]*)"
 				},
 				{
 					"match": ",",
@@ -513,9 +493,6 @@
 			"name": "meta.match.aggregate.grasp",
 			"begin": "\\b([a-z_][A-Za-z0-9_]*)\\s*(:=)\\s*(?:([A-Za-z_][A-Za-z0-9_]*)\\s*:)?(sum|count|min|max|avg)\\s*(<)",
 			"beginCaptures": {
-				"1": {
-					"name": "variable.other.grasp"
-				},
 				"2": {
 					"name": "keyword.operator.grasp"
 				},
@@ -547,9 +524,6 @@
 		"match-simple": {
 			"match": "\\b([a-z_][A-Za-z0-9_]*)\\s*(:=)",
 			"captures": {
-				"1": {
-					"name": "variable.other.grasp"
-				},
 				"2": {
 					"name": "keyword.operator.grasp"
 				}
@@ -559,9 +533,6 @@
 			"name": "meta.type-assertion.grasp",
 			"begin": "\\b([a-z_][A-Za-z0-9_]*)\\s*(::)",
 			"beginCaptures": {
-				"1": {
-					"name": "variable.other.grasp"
-				},
 				"2": {
 					"name": "keyword.operator.grasp"
 				}
@@ -591,7 +562,7 @@
 			"match": "\\b([a-z_][A-Za-z0-9_]*)\\s*(:)",
 			"captures": {
 				"1": {
-					"name": "variable.parameter.grasp"
+					"name": "entity.other.attribute-name.grasp"
 				},
 				"2": {
 					"name": "punctuation.separator.key-value.grasp"
@@ -629,9 +600,6 @@
 				},
 				{
 					"include": "#operators"
-				},
-				{
-					"include": "#variable"
 				}
 			]
 		},
@@ -742,9 +710,6 @@
 				},
 				{
 					"include": "#boolean-null"
-				},
-				{
-					"include": "#variable"
 				}
 			]
 		},
@@ -774,12 +739,7 @@
 					"name": "punctuation.separator.grasp"
 				},
 				{
-					"match": "\\*\\*\\s*([a-z_][A-Za-z0-9_]*)",
-					"captures": {
-						"1": {
-							"name": "variable.other.grasp"
-						}
-					}
+					"match": "\\*\\*\\s*([a-z_][A-Za-z0-9_]*)"
 				},
 				{
 					"include": "#comments"
@@ -853,10 +813,6 @@
 		"keywords": {
 			"match": "\\b(not|and|or|input|limit|order_by|offset|asc|desc|all)\\b",
 			"name": "keyword.control.grasp"
-		},
-		"variable": {
-			"match": "\\b([a-z_][A-Za-z0-9_]*)\\b",
-			"name": "variable.other.grasp"
 		},
 		"types": {
 			"patterns": [
