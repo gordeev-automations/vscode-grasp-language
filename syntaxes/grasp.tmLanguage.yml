@@ -165,7 +165,7 @@ repository:
       '1': { name: keyword.control.grasp }
     end: "$"
     patterns:
-      - match: "\\b(limit|order_by|offset|asc|desc|all)\\b"
+      - match: "\\b(limit|order_by|offset|asc|desc|snapshot)\\b"
         name: keyword.control.grasp
       - match: ':'
         name: punctuation.separator.key-value.grasp
@@ -272,9 +272,14 @@ repository:
       - include: '#comments'
 
   match-simple:
-    match: "\\b([a-z_][A-Za-z0-9_]*)\\s*(:=)"
-    captures:
+    name: meta.match.grasp
+    begin: "\\b([a-z_][A-Za-z0-9_]*)\\s*(:=)"
+    beginCaptures:
       '2': { name: keyword.operator.grasp }
+    end: "$"
+    patterns:
+      - include: '#expr'
+      - include: '#comments'
 
   type-assertion:
     name: meta.type-assertion.grasp
@@ -311,12 +316,16 @@ repository:
       - include: '#string'
       - include: '#number'
       - include: '#bit-literal'
+      - include: '#dot-access'
+      - include: '#closure-expr'
+      - include: '#enum-literal'
       - include: '#fncall'
       - include: '#aggregate-expr'
       - include: '#dict-literal'
       - include: '#bracket-expr'
       - include: '#paren-expr'
       - include: '#boolean-null'
+      - include: '#boolean-operators'
       - include: '#operators'
 
   string:
@@ -345,6 +354,8 @@ repository:
     endCaptures:
       '1': { name: punctuation.section.parens.end.grasp }
     patterns:
+      - match: "\\b(eval_token)\\b(?=\\s*:)"
+        name: keyword.control.grasp
       - include: '#kv-arg'
       - include: '#expr'
       - match: ','
@@ -373,9 +384,11 @@ repository:
       - include: '#string'
       - include: '#number'
       - include: '#bit-literal'
+      - include: '#dot-access'
       - include: '#fncall'
       - include: '#paren-expr'
       - include: '#boolean-null'
+      - include: '#boolean-operators'
 
   dict-literal:
     name: meta.dict.literal.grasp
@@ -420,8 +433,49 @@ repository:
       - include: '#expr'
 
   boolean-null:
-    match: "\\b(true|false|NULL)\\b"
+    match: "\\b(true|false|null|ABSENT)\\b"
     name: constant.language.grasp
+
+  boolean-operators:
+    match: "\\b(and|or|not|in)\\b"
+    name: keyword.operator.grasp
+
+  closure-expr:
+    name: meta.closure.grasp
+    begin: "\\b(closure|result_equivalent_closure)\\s*(\\()"
+    beginCaptures:
+      '1': { name: keyword.control.grasp }
+      '2': { name: punctuation.section.parens.begin.grasp }
+    end: "(\\))"
+    endCaptures:
+      '1': { name: punctuation.section.parens.end.grasp }
+    patterns:
+      - include: '#closure-params'
+      - match: '(->)'
+        name: keyword.operator.grasp
+      - include: '#expr'
+      - match: ','
+        name: punctuation.separator.grasp
+
+  enum-literal:
+    name: meta.enum.grasp
+    begin: "\\b(enum)\\s*(\\()"
+    beginCaptures:
+      '1': { name: storage.type.grasp }
+      '2': { name: punctuation.section.parens.begin.grasp }
+    end: "(\\))"
+    endCaptures:
+      '1': { name: punctuation.section.parens.end.grasp }
+    patterns:
+      - include: '#string'
+      - match: ','
+        name: punctuation.separator.grasp
+
+  dot-access:
+    match: "(\\.)([a-z_][A-Za-z0-9_]*)"
+    captures:
+      '1': { name: punctuation.accessor.grasp }
+      '2': { name: entity.other.attribute-name.grasp }
 
   # ==========================================================================
   # Operators
@@ -439,7 +493,7 @@ repository:
   # ==========================================================================
 
   keywords:
-    match: "\\b(not|and|or|input|limit|order_by|offset|asc|desc|all)\\b"
+    match: "\\b(not|and|or|input)\\b"
     name: keyword.control.grasp
 
   # ==========================================================================
@@ -452,21 +506,22 @@ repository:
       - include: '#scalar-type'
 
   scalar-type:
-    match: "\\b(boolean|i8|i16|i32|i64|u8|u16|u32|u64|integer|f32|f64|numeric|string|bytes|bits|date|time|timestamp|timestamp_with_timezone|interval|json|any)\\b"
+    match: "\\b(boolean|i8|i16|i32|i64|u8|u16|u32|u64|integer|f32|f64|numeric|string_with_encoding|string|bytes|bits|date|time|timestamp_with_timezone|timestamp|interval|json|dynamic)\\b"
     name: storage.type.grasp
 
   compound-type:
     patterns:
-      - include: '#type-nullable'
-      - include: '#type-thunk'
+      - include: '#enum-literal'
+      - include: '#type-optional'
+      - include: '#type-closure'
       - include: '#type-array'
       - include: '#type-map'
       - include: '#type-struct'
       - include: '#type-parametric'
 
-  type-nullable:
+  type-optional:
     name: meta.type.grasp
-    begin: "\\b(nullable)\\s*(\\()"
+    begin: "\\b(optional)\\s*(\\()"
     beginCaptures:
       '1': { name: storage.type.grasp }
       '2': { name: punctuation.section.parens.begin.grasp }
@@ -476,9 +531,9 @@ repository:
     patterns:
       - include: '#types'
 
-  type-thunk:
+  type-closure:
     name: meta.type.grasp
-    begin: "\\b(thunk)\\s*(\\()"
+    begin: "\\b(closure|result_equivalent_closure)\\s*(\\()"
     beginCaptures:
       '1': { name: storage.type.grasp }
       '2': { name: punctuation.section.parens.begin.grasp }
@@ -486,7 +541,29 @@ repository:
     endCaptures:
       '1': { name: punctuation.section.parens.end.grasp }
     patterns:
+      - include: '#closure-params'
+      - match: '(->)'
+        name: keyword.operator.grasp
       - include: '#types'
+      - match: ','
+        name: punctuation.separator.grasp
+
+  closure-params:
+    name: meta.closure-params.grasp
+    begin: '(\()'
+    beginCaptures:
+      '1': { name: punctuation.section.parens.begin.grasp }
+    end: '(\))'
+    endCaptures:
+      '1': { name: punctuation.section.parens.end.grasp }
+    patterns:
+      - match: "\\b([a-z_][A-Za-z0-9_]*)\\s*(:)"
+        captures:
+          '1': { name: entity.other.attribute-name.grasp }
+          '2': { name: punctuation.separator.key-value.grasp }
+      - include: '#types'
+      - match: ','
+        name: punctuation.separator.grasp
 
   type-array:
     name: meta.type.grasp
